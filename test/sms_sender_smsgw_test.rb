@@ -13,7 +13,7 @@ class SmsSenderSmsgwTest < ActiveSupport::TestCase
     assert_equal send_sms_result[:error], nil
     balance_after = SmsSenderSmsgw.get_balance(ENV['user_name'], ENV['password'])
     assert_equal balance_after[:error], nil
-    assert_equal balance_before[:balance], balance_after[:balance] - 1
+    assert_equal balance_before[:balance], balance_after[:balance] + 1
     # Add query message when feature implemented
   end
 end

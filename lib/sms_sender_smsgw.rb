@@ -1,4 +1,3 @@
-require 'message_parser'
 require 'mobile_number_normalizer'
 require 'error_codes'
 
@@ -10,7 +9,7 @@ module SmsSenderSmsgw
 
   # According to documentation: http://smsgw.net/docs/
   def self.send_sms(user_name, password, tag_name, recepient_number, message, date_time = nil)
-    recepient_number = MobileNumberNormalizer.normalize_number(recepient_number)
+    recepient_number = MobileNumberNormalizer.normalize_number(recepient_number.dup)
     http = Net::HTTP.new('api.smsgw.net', 80)
     path = '/SendSingleSMS'
     body = "strUserName=#{user_name}&strPassword=#{password}&strTagName=#{tag_name}&strRecepientNumber=#{recepient_number}&strMessage=#{message}"
