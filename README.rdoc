@@ -1,6 +1,6 @@
-= SmsSenderResalty
+= SmsSenderSmsgw
 
 This project rocks and uses MIT-LICENSE.
 
 http api based on: 
-http://docs.digitalplatform.apiary.io/
+http://smsgw.net/docs/
