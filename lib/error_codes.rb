@@ -1,6 +1,6 @@
 module ErrorCodes
   def self.get_error_code(error_code)
-    # Based on http://docs.digitalplatform.apiary.io/#reference/errors-list
+    # Based on http://smsgw.net/docs/#GetCodeDescription
     case error_code
       when "0"
         {error: "Failed", code: 0}
@@ -18,6 +18,8 @@ module ErrorCodes
         {error: "Invalid Mobile Number", code: 60}
       when "70"
         {error: "System Error", code: 70}
+      else 
+        {error: "Unknown error code", code: error_code}
     end
   end
 end
