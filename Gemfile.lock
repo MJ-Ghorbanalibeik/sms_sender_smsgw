@@ -1,7 +1,7 @@
 PATH
   remote: .
   specs:
-    sms_sender_smsgw (0.0.1)
+    sms_sender_smsgw (1.0.0)
 
 GEM
   remote: https://rubygems.org/
@@ -81,3 +81,6 @@ DEPENDENCIES
   rails
   sms_sender_smsgw!
   sqlite3
+
+BUNDLED WITH
+   1.10.6

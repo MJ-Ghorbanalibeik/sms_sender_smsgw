@@ -8,12 +8,12 @@ module SmsSenderSmsgw
   include ErrorCodes
 
   # According to documentation: http://smsgw.net/docs/
-  def self.send_sms(user_name, password, tag_name, recepient_number, message, date_time = nil)
-    recepient_number = MobileNumberNormalizer.normalize_number(recepient_number.dup)
+  def self.send_sms(credentials, mobile_number, message, sender, options = nil)
+    recepient_number = MobileNumberNormalizer.normalize_number(mobile_number.dup)
     http = Net::HTTP.new('api.smsgw.net', 80)
     path = '/SendSingleSMS'
-    body = "strUserName=#{user_name}&strPassword=#{password}&strTagName=#{tag_name}&strRecepientNumber=#{recepient_number}&strMessage=#{message}"
-    body.append("&sendDateTime=yyyyMMddHHmm#{date_time.strftime("%Y%m%d%H%M")}") if date_time && (date_time.kind_of?(DateTime) || date_time.kind_of?(Time))
+    body = "strUserName=#{credentials[:username]}&strPassword=#{credentials[:password]}&strTagName=#{sender}&strRecepientNumber=#{recepient_number}&strMessage=#{message}"
+    body.append("&sendDateTime=yyyyMMddHHmm#{options[:date_time].strftime("%Y%m%d%H%M")}") if !options.blank? && options[:date_time] && (options[:date_time].kind_of?(DateTime) || options[:date_time].kind_of?(Time))
     headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
     response = http.post(path, body, headers)
     if response.code.to_i == 200 && (response.body.to_i == 1 || response.body.to_i == 2)
@@ -27,10 +27,10 @@ module SmsSenderSmsgw
     end
   end
 
-  def self.get_balance(user_name, password)
+  def self.get_balance(credentials)
     http = Net::HTTP.new('api.smsgw.net', 80)
     path = '/GetCredit'
-    body = "strUserName=#{user_name}&strPassword=#{password}"
+    body = "strUserName=#{credentials[:username]}&strPassword=#{credentials[:password]}"
     headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
     response = http.post(path, body, headers)
     if response.code.to_i == 200 
@@ -40,7 +40,7 @@ module SmsSenderSmsgw
     end
   end
 
-  def self.query_message()
+  def self.query_message(credentials, message_id)
     # This service does not support message id yet! There should be a message id in response of sending sms, but there isn't.
   end
 end
