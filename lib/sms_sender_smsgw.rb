@@ -1,25 +1,22 @@
-require 'mobile_number_normalizer'
-require 'error_codes'
+require 'net/http'
+require 'sms_sender_smsgw/mobile_number_normalizer'
+require 'sms_sender_smsgw/error_codes'
 
 module SmsSenderSmsgw
-  require "net/http"
-
-  include MobileNumberNormalizer
-  include ErrorCodes
-
   # According to documentation: http://smsgw.net/docs/
   def self.send_sms(credentials, mobile_number, message, sender, options = nil)
-    recepient_number = MobileNumberNormalizer.normalize_number(mobile_number.dup)
+    recepient_number = SmsSenderSmsgw::MobileNumberNormalizer.normalize_number(mobile_number)
+    message_normalized = SmsSenderSmsgw::MobileNumberNormalizer.normalize_message(message)
     http = Net::HTTP.new('api.smsgw.net', 80)
     path = '/SendSingleSMS'
-    body = "strUserName=#{credentials[:username]}&strPassword=#{credentials[:password]}&strTagName=#{sender}&strRecepientNumber=#{recepient_number}&strMessage=#{message}"
+    body = "strUserName=#{credentials[:username]}&strPassword=#{credentials[:password]}&strTagName=#{sender}&strRecepientNumber=#{recepient_number}&strMessage=#{message_normalized}"
     body.append("&sendDateTime=yyyyMMddHHmm#{options[:date_time].strftime("%Y%m%d%H%M")}") if !options.blank? && options[:date_time] && (options[:date_time].kind_of?(DateTime) || options[:date_time].kind_of?(Time))
     headers = { 'Content-Type' => 'application/x-www-form-urlencoded' }
     response = http.post(path, body, headers)
     if response.code.to_i == 200 && (response.body.to_i == 1 || response.body.to_i == 2)
       return { message_id: nil, code: 1 }
     elsif response.code.to_i == 200
-      result = ErrorCodes.get_error_code(response.body.to_i)
+      result = SmsSenderSmsgw::ErrorCodes.get_error_code(response.body.to_i)
       raise result[:error]
       return result
     else
