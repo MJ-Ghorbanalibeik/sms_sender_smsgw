@@ -1,6 +1,6 @@
 # SMS sender smsgw
 
-
+[![Circle CI](https://circleci.com/gh/MJ-Ghorbanalibeik/sms_sender_smsgw/tree/master.svg?style=svg)](https://circleci.com/gh/MJ-Ghorbanalibeik/sms_sender_smsgw/tree/master)
 
 rails gem to send sms via http://api.smsgw.net/
 
