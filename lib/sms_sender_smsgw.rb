@@ -1,15 +1,11 @@
-require 'mobile_number_normalizer'
-require 'error_codes'
+require 'net/http'
+require 'sms_sender_smsgw/mobile_number_normalizer'
+require 'sms_sender_smsgw/error_codes'
 
 module SmsSenderSmsgw
-  require "net/http"
-
-  include MobileNumberNormalizer
-  include ErrorCodes
-
   # According to documentation: http://smsgw.net/docs/
   def self.send_sms(credentials, mobile_number, message, sender, options = nil)
-    recepient_number = MobileNumberNormalizer.normalize_number(mobile_number.dup)
+    recepient_number = SmsSenderSmsgw::MobileNumberNormalizer.normalize_number(mobile_number.dup)
     http = Net::HTTP.new('api.smsgw.net', 80)
     path = '/SendSingleSMS'
     body = "strUserName=#{credentials[:username]}&strPassword=#{credentials[:password]}&strTagName=#{sender}&strRecepientNumber=#{recepient_number}&strMessage=#{message}"
@@ -19,7 +15,7 @@ module SmsSenderSmsgw
     if response.code.to_i == 200 && (response.body.to_i == 1 || response.body.to_i == 2)
       return { message_id: nil, code: 1 }
     elsif response.code.to_i == 200
-      result = ErrorCodes.get_error_code(response.body.to_i)
+      result = SmsSenderSmsgw::ErrorCodes.get_error_code(response.body.to_i)
       raise result[:error]
       return result
     else
